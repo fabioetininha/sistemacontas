@@ -14,43 +14,39 @@ import br.com.cotiinformatica.repositories.UsuarioRepository;
 
 @Controller
 public class DadosUsuarioController {
-	
+
 	@Autowired
 	private UsuarioRepository usuarioRepository;
-	private UsuarioDTO usuario;
 
 	@RequestMapping(value = "/admin/dados-usuario")
 	public ModelAndView dadosUsuario() {
 
 		// WEB-INF/views/admin/dados-usuario.jsp
-		ModelAndView modelAndView = new ModelAndView ("admin/dados-usuario");
+		ModelAndView modelAndView = new ModelAndView("admin/dados-usuario");
 		modelAndView.addObject("model", new AlterarSenhaModel());
-		
+
 		return modelAndView;
 	}
-	
-	@RequestMapping(value = "/admin/atualizar-senha", 
-method = RequestMethod.POST)
-	public ModelAndView atualizarSenha(AlterarSenhaModel model, 
-HttpServletRequest request) {
-		
+
+	@RequestMapping(value = "/admin/atualizar-senha", method = RequestMethod.POST)
+	public ModelAndView atualizarSenha(AlterarSenhaModel model, HttpServletRequest request) {
+
 		ModelAndView modelAndView = new ModelAndView("admin/dados-usuario");
-		
+
 		try {
-			
-			//capturar o usuário autenticado em sessão
+
+			// capturar o usuário autenticado em sessão
 			UsuarioDTO usuarioDTO = (UsuarioDTO) request.getSession().getAttribute("usuario");
-			
-			//atualizar a senha do usuário
+
+			// atualizar a senha do usuário
 			usuarioRepository.update(usuarioDTO.getIdUsuario(), model.getNovaSenha());
-			
+
 			modelAndView.addObject("mensagem_sucesso", "Senha de acesso atualizada com sucesso.");
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			modelAndView.addObject("mensagem_erro", "Erro ao alterar senha: " + e.getMessage());
 		}
-		
-		modelAndView.addObject("model", new AlterarSenhaModel());		
+
+		modelAndView.addObject("model", new AlterarSenhaModel());
 		return modelAndView;
 	}
 }
