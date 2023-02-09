@@ -88,7 +88,7 @@ public class ContaRepository {
 					conta.setIdConta(rs.getInt("idconta"));
 					conta.setNome(rs.getString("nome"));
 					conta.setValor(rs.getDouble("valor"));
-					conta.setData(new SimpleDateFormat().parse(rs.getString("data")));
+					conta.setData(new SimpleDateFormat("yyyy-MM-dd").parse(rs.getString("data")));
 					conta.setTipo(rs.getInt("tipo") == 1 ? TipoConta.RECEBER : rs.getInt("tipo") == 2 ? TipoConta.PAGAR : null);
 					conta.setObservacoes(rs.getString("observacoes"));					
 				}
@@ -122,7 +122,7 @@ public class ContaRepository {
 					conta.setIdConta(rs.getInt("idconta"));
 					conta.setNome(rs.getString("nome"));
 					conta.setValor(rs.getDouble("valor"));
-					conta.setData(new SimpleDateFormat().parse(rs.getString("data")));
+					conta.setData(new SimpleDateFormat("yyyy-MM-dd").parse(rs.getString("data")));
 					conta.setTipo(rs.getInt("tipo") == 1 ? TipoConta.RECEBER : rs.getInt("tipo") == 2 ? TipoConta.PAGAR : null);
 					conta.setObservacoes(rs.getString("observacoes"));					
 				}
