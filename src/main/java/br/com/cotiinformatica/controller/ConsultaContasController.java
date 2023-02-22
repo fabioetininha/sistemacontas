@@ -14,53 +14,83 @@ import org.springframework.web.servlet.ModelAndView;
 
 import br.com.cotiinformatica.dtos.UsuarioDTO;
 import br.com.cotiinformatica.entities.Conta;
+import br.com.cotiinformatica.helpers.DateHelper;
 import br.com.cotiinformatica.models.ConsultaContasModel;
 import br.com.cotiinformatica.repositories.ContaRepository;
 
 @Controller
 public class ConsultaContasController {
 	
+
 	@Autowired //inicialização automática (injeção de dependência)
 	private ContaRepository contaRepository;
 
 	@RequestMapping(value = "/admin/consulta-contas")
-	public ModelAndView consultaContas() {
+	public ModelAndView consultaContas(HttpServletRequest request) {
 		
 		//WEB-INF/views/admin/consulta-contas.jsp
-		ModelAndView modelAndView = new ModelAndView("admin/consulta-contas");
-		modelAndView.addObject("model", new ConsultaContasModel());
+		ModelAndView modelAndView 
+= new ModelAndView("admin/consulta-contas");
 		
-		return modelAndView;
-	}	
-	
-	@RequestMapping(value = "/admin/consultar-contas", method = RequestMethod.POST)
-	public ModelAndView consultarContas(ConsultaContasModel model, HttpServletRequest request) {
-		
-		ModelAndView modelAndView = new ModelAndView("admin/consulta-contas");
+		ConsultaContasModel model = new ConsultaContasModel();
 		
 		try {
-		
-			//capturar os dados do usuário gravado em sessão
-			UsuarioDTO usuarioDto = (UsuarioDTO) request.getSession().getAttribute("usuario");
 			
-			//capturar as datas selecionadas no formulário
-			Date dataIni = new SimpleDateFormat("yyyy-MM-dd").parse(model.getDataIni());
-			Date dataFim = new SimpleDateFormat("yyyy-MM-dd").parse(model.getDataFim());
+			model.setDataIni(DateHelper.getFirstDayOfMonth());
+			model.setDataFim(DateHelper.getLastDayOfMonth());
 			
-			//consultar as contas do usuário no banco de dados
-			List<Conta> contas = contaRepository.findByUsuarioAndData(usuarioDto.getIdUsuario(), dataIni, dataFim);
-			
-			//enviando a lista de contas para a página exibir
+			List<Conta> contas = obterConsultaDeContas
+(model, request);
 			modelAndView.addObject("contas", contas);
 		}
 		catch(Exception e) {
-			modelAndView.addObject("mensagem", "Falha ao consultar contas: " + e.getMessage());
+			modelAndView.addObject("mensagem", 
+"Falha ao consultar contas: " 
++ e.getMessage());
+		}
+		
+		modelAndView.addObject("model", model);		
+		return modelAndView;
+	}	
+	
+	@RequestMapping(value = "/admin/consultar-contas", 
+method = RequestMethod.POST)
+	public ModelAndView consultarContas
+(ConsultaContasModel model, HttpServletRequest request) {
+		
+		ModelAndView modelAndView = new ModelAndView
+("admin/consulta-contas");
+		
+		try {
+		
+			List<Conta> contas = obterConsultaDeContas
+(model, request);			
+			modelAndView.addObject("contas", contas);
+		}
+		catch(Exception e) {
+			modelAndView.addObject("mensagem", 
+"Falha ao consultar contas: " + e.getMessage());
 		}
 		
 		modelAndView.addObject("model", model);		
 		return modelAndView;
 	}
+	
+	private List<Conta> obterConsultaDeContas(ConsultaContasModel 
+model, HttpServletRequest request) throws Exception {
+	
+		//capturar os dados do usuário gravado em sessão
+		UsuarioDTO usuarioDto = (UsuarioDTO) request.getSession()
+.getAttribute("usuario");
+		
+		//capturar as datas selecionadas no formulário
+		Date dataIni = new SimpleDateFormat
+("yyyy-MM-dd").parse(model.getDataIni());
+		Date dataFim = new SimpleDateFormat
+("yyyy-MM-dd").parse(model.getDataFim());
+		
+		//consultar as contas do usuário no banco de dados
+		return contaRepository.findByUsuarioAndData
+(usuarioDto.getIdUsuario(), dataIni, dataFim);		
+	}	
 }
-
-
-
